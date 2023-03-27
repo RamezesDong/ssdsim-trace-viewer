@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
 import math
+import address
+import os
 from pprint import pprint
 
 
-def get_matrix(path):
-    with open(path) as file_object:
+def get_matrix(file_path):
+    with open(file_path) as file_object:
         contents = file_object.read()
     matrix = list()
     lines = contents.splitlines(False)
@@ -18,8 +20,7 @@ def get_matrix(path):
     return matrix
 
 
-def main():
-    matrix = get_matrix('./ssd-trace/HM_1')
+def show_matrix(matrix):
     trace = {}
     for line in matrix:
         if trace.get(line[2], -1) == -1:
@@ -45,6 +46,30 @@ def main():
     y = time
     plt.bar(x, y)
     plt.show()
+
+
+def change_matrix_to_address_count(matrix):
+    address_list = list()
+    for line in matrix:
+        left = line[2]
+        right = line[2] + line[3] - 1
+        a = address.Address(left, right)
+        # print(a)
+        flag = False
+        for b in address_list:
+            if a.is_adjacent(b):
+                b.merge_address(a)
+                flag = True
+                break
+        if not flag:
+            address_list.append(a)
+    for a in address_list:
+        print(a)
+
+
+def main():
+    matrix = get_matrix('./ssd-trace/HM_1')
+    change_matrix_to_address_count(matrix)
 
 
 if __name__ == "__main__":
